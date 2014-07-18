@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  width="460" height="270"
+		  paddingLeft="20" paddingRight="20" paddingTop="25" paddingBottom="25">
+	
+	<fx:Script>
+		<![CDATA[
+			import org.ten.DataShop;
+			import org.ten.EnergyPoint;
+			import org.ten.PulseSpace;
+
+			[Bindable]
+			/**
+			 * The app's data shop.
+			 */
+			private var dataShop:DataShop = DataShop.instance;
+			
+			[Bindable]
+			/**
+			 * The competitor this panel represents.
+			 */
+			public var competitorSpace:PulseSpace;
+			
+			/**
+			 * The competitor identity, in a number.
+			 */
+			public function set competitorNumber(number:uint):void {
+				setCompetitorNumber(number);
+			}
+			
+			/**
+			 * Set the competitor number.
+			 */
+			private function setCompetitorNumber(number:uint):void {
+				if(number == 1) {
+					competitorSpace = dataShop.competitorSpace1;
+				} else {
+					competitorSpace = dataShop.competitorSpace2;
+				}
+				
+				if(competitorSpace == null) {
+					callLater(setCompetitorNumber, [number]);
+				}
+			}
+			
+			/**
+			 * Helper function.
+			 * Ensures that the display of an element always has the passed 
+			 * number of digits (including 0).
+			 */
+			private function constrainToDigits(value:Number, digits:int):String {
+				// check if the value starts with a zero
+				var stringValue:String = value.toString();
+				if(stringValue.charAt(0) == "0") {
+					// it does, so shorten the precision
+					return value.toPrecision(digits - 1);
+				} else {
+					// it doesn't, so return the defaul precision
+					return value.toPrecision(digits);
+				}
+			}
+			
+			/**
+			 * Determine the colour of the panel based on energy usage.
+			 */
+			private function calculatePanelColour(typicalEnergy:Number):uint {
+				if(competitorSpace.energyPoint.actual == 0) {
+					// we have an error; make it yellow
+					return 0xC9A92D;
+				} else if (competitorSpace.energyPoint.actual <= typicalEnergy) {
+					// we're doing well; make it green
+					return 0x4A9848
+				} else {
+					// we're not doing well, make it red
+					return 0xC12232;
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:Rect includeInLayout="false" x="0" y="0" width="{this.width}" height="{this.height}">
+		<s:fill>
+			<s:SolidColor color="{calculatePanelColour(competitorSpace.energyPoint.typical)}" alpha="0.8" />
+		</s:fill>
+	</s:Rect>
+	
+	<s:Label text="{competitorSpace.spaceName}" fontSize="38" />
+	
+	<s:Spacer height="100%" />
+	
+	<s:HGroup width="100%" verticalAlign="bottom">
+		<s:VGroup verticalAlign="bottom">
+			<s:Label text="Their Current Energy Demand" fontFamily="helveticaNeueLight" fontSize="20" width="160" />
+			
+			<s:HGroup verticalAlign="baseline">
+				<s:Label text="{constrainToDigits(competitorSpace.energyPoint.actual, 3)}" fontFamily="helveticaNeueUltraLight" fontSize="90" />
+				<s:Label text="kW" fontFamily="helveticaNeueThinExtended" fontSize="45" />
+			</s:HGroup>
+		</s:VGroup>
+		
+		<s:Spacer width="100%" />
+		
+		<s:VGroup verticalAlign="bottom" paddingBottom="12">
+			<s:Label text="Their Typical Energy Demand" fontFamily="helveticaNeueLight" fontSize="20" width="160" />
+			
+			<s:HGroup verticalAlign="baseline">
+				<s:Label text="{constrainToDigits(competitorSpace.energyPoint.typical, 3)}" fontFamily="helveticaNeueUltraLight" fontSize="44" />
+				<s:Label text="kW" fontFamily="helveticaNeueThinExtended" fontSize="22" />
+			</s:HGroup>
+		</s:VGroup>
+	</s:HGroup>
+</s:VGroup>

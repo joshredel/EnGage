@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  width="480" height="540" horizontalAlign="center"
+		  paddingLeft="20" paddingRight="20" paddingTop="25" paddingBottom="25"
+		  creationComplete="finish()">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.yahoo.webapis.weather.CurrentConditions;
+			import com.yahoo.webapis.weather.ForecastConditions;
+			import com.yahoo.webapis.weather.Units;
+			import com.yahoo.webapis.weather.WeatherService;
+			import com.yahoo.webapis.weather.events.WeatherResultEvent;
+			
+			import mx.formatters.DateFormatter;
+			
+			/**
+			 * @private
+			 * The weather service used to request weather.
+			 */
+			private var weatherService:WeatherService = new WeatherService();
+			
+			[Bindable]
+			/**
+			 * The condition code for the current weather.
+			 */
+			private var currentConditionCode:Number = 0;
+			
+			[Bindable]
+			/**
+			 * The current temperature outside.
+			 */
+			private var currentTemperature:Number = 0;
+			
+			[Bindable]
+			/**
+			 * The forecasted condition code for the weather later today.
+			 */
+			private var laterConditionCode:Number = 0;
+			
+			[Bindable]
+			/**
+			 * The forcasted high for later today.
+			 */
+			private var laterHighTemperature:Number = 0;
+			
+			[Bindable]
+			/**
+			 * The forecasted low for later today.
+			 */
+			private var laterLowTemperature:Number = 0;
+			
+			[Bindable]
+			/**
+			 * The forecasted condition code for the weather tomorrow.
+			 */
+			private var tomorrowConditionCode:Number = 0;
+			
+			[Bindable]
+			/**
+			 * The forecasted high for tomorrow.
+			 */
+			private var tomorrowHighTemperature:Number = 0;
+			
+			[Bindable]
+			/**
+			 * The forecasted low for tomorrow.
+			 */
+			private var tomorrowLowTemperature:Number = 0; 
+			
+			/**
+			 * Prepares a timer to move the background images with the 
+			 * progression of time and to prepare a timer to manage the 
+			 * time in the clock and prepares the weather service.
+			 */
+			private function finish():void {
+				// prepare and start the clock timer
+				var clockTimer:Timer = new Timer(1000);
+				clockTimer.addEventListener(TimerEvent.TIMER, refreshTime);
+				clockTimer.start();
+				refreshTime();
+				
+				// initialize the weather service and listen for responses
+				weatherService = new WeatherService();
+				weatherService.addEventListener(WeatherResultEvent.WEATHER_LOADED, handleWeatherResult);
+				refreshWeather();
+				
+				// prepare and start a timer to refresh the weather
+				var weatherTimer:Timer = new Timer(600000);
+				weatherTimer.addEventListener(TimerEvent.TIMER, refreshWeather);
+				weatherTimer.start();
+			}
+			
+			/**
+			 * Refreshed the time and date.
+			 */
+			private function refreshTime(event:TimerEvent = null):void {
+				// a formatter for each of the date and time
+				var formatter:DateFormatter = new DateFormatter();
+				
+				// get the current time
+				var now:Date = new Date();
+				
+				// format the day of week
+				formatter.formatString = "EEE, DD MMM";
+				dateLabel.text = formatter.format(now);
+				
+				// format the time
+				formatter.formatString = "JJ:NN";
+				timeLabel.text = formatter.format(now);
+			}
+			
+			/**
+			 * Gets the weather from Environment Canada's feed.
+			 */
+			private function refreshWeather(event:TimerEvent = null):void {
+				// request the weather
+				weatherService.getWeather("CAXX0301", Units.METRIC_UNITS);
+			}
+			
+			/**
+			 * Handles the result of the weather fetch by showing 
+			 * the current weather.
+			 */
+			private function handleWeatherResult(event:WeatherResultEvent):void {
+				// get the current conditions and store the information
+				var conditions:CurrentConditions = weatherService.weather.current;
+				currentTemperature = conditions.temperature;
+				currentConditionCode = conditions.code;
+				
+				// get the forecast
+				var forecast:ForecastConditions = weatherService.weather.forecast[0];
+				laterConditionCode = forecast.code;
+				laterHighTemperature = forecast.high;
+				laterLowTemperature = forecast.low;
+				
+				// move to tomorrow and display the information
+				forecast = weatherService.weather.forecast[1];
+				tomorrowConditionCode = forecast.code;
+				tomorrowHighTemperature = forecast.high;
+				tomorrowLowTemperature = forecast.low;
+			}
+			
+			/**
+			 * Helper function.
+			 * Ensures that the display of an element always has the passed 
+			 * number of digits (including 0).
+			 */
+			private function constrainToDigits(value:Number, digits:int):String {
+				// check if the value starts with a zero
+				var stringValue:String = value.toString();
+				if(stringValue.charAt(0) == "0") {
+					// it does, so shorten the precision
+					return value.toPrecision(digits - 1);
+				} else {
+					// it doesn't, so return the defaul precision
+					return value.toPrecision(digits);
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:Rect includeInLayout="false" x="0" y="0" width="{this.width}" height="{this.height}">
+		<s:fill>
+			<s:SolidColor color="0x000000" alpha="0.5" />
+		</s:fill>
+	</s:Rect>
+	
+	<s:Label id="dateLabel" text="Wed, 21 Jul" fontFamily="helveticaNeueUltraLight" fontSize="60" />
+	<s:Label id="timeLabel" text="23:45" fontFamily="helveticaNeueUltraLight" fontSize="174" />
+	
+	<s:Spacer height="100%" />
+	
+	<s:HGroup>
+		<s:Image source="assets/images/weather/{currentConditionCode}.png" width="102" height="106" smooth="true" verticalAlign="top" />
+		<s:Label text="{currentTemperature}˚" fontFamily="helveticaNeueUltraLight" fontSize="110" paddingTop="8" />
+	</s:HGroup>
+	
+	<s:Spacer height="100%" />
+	
+	<s:HGroup verticalAlign="middle" fontSize="22">
+		<s:Label text="Rest of the Day" fontFamily="helveticaNeueMedium" width="170" textAlign="right" />
+		<s:Spacer width="4" />
+		<s:Image source="assets/images/weather/{laterConditionCode}.png" width="47" height="48" smooth="true" verticalAlign="top" />
+		<s:Spacer width="10" />
+		<s:Label text="High: {laterHighTemperature}˚" fontFamily="helveticaNeueLight" width="100" />
+		<s:Label text="Low: {laterLowTemperature}˚" fontFamily="helveticaNeueLight" width="100" />
+	</s:HGroup>
+	
+	<s:HGroup verticalAlign="middle" fontSize="22">
+		<s:Label text="Tomorrow" fontFamily="helveticaNeueMedium" width="170" textAlign="right" />
+		<s:Spacer width="4" />
+		<s:Image source="assets/images/weather/{tomorrowConditionCode}.png" width="47" height="48" smooth="true" verticalAlign="top" />
+		<s:Spacer width="10" />
+		<s:Label text="High: {tomorrowHighTemperature}˚" fontFamily="helveticaNeueLight" width="100" />
+		<s:Label text="Low: {tomorrowLowTemperature}˚" fontFamily="helveticaNeueLight" width="100" />
+	</s:HGroup>
+</s:VGroup>

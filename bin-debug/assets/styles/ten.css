@@ -1,0 +1,49 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+@font-face {
+	src: url("assets/fonts/HelveticaNeueLTStd-UltLt.otf");
+	fontFamily: helveticaNeueUltraLight;
+}
+
+@font-face {
+	src: url("assets/fonts/HelveticaNeueLTStd-Lt.otf");
+	fontFamily: helveticaNeueLight;
+}
+
+@font-face {
+	src: url("assets/fonts/HelveticaNeueLTStd-Md.otf");
+	fontFamily: helveticaNeueMedium;
+}
+
+@font-face {
+	src: url("assets/fonts/HelveticaNeueLTStd-Roman.otf");
+	fontFamily: helveticaNeueRoman;
+}
+
+@font-face {
+	src: url("assets/fonts/HelveticaNeueLTStd-ThEx.otf");
+	fontFamily: helveticaNeueThinExtended;
+}
+
+@font-face {
+	src: url("assets/fonts/HelveticaNeueLTStd-Blk.otf");
+	fontFamily: helveticaNeueBlack;
+}
+
+@font-face {
+	src: url("assets/fonts/HelveticaNeueLTStd-Md.otf");
+	embedAsCff: false;
+	fontFamily: helveticaNeueMediumCFF;
+}
+
+s|WindowedApplication {
+	color: #FFFFFF;
+	fontFamily: helveticaNeueLight;
+}
+/*
+.weatherTitle {
+	fontFamily: segoeSemiBold;
+	fontSize: 21;
+}*/

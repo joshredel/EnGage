@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="460" height="540"
+		 paddingLeft="20" paddingRight="20" paddingTop="25" paddingBottom="25">
+	
+	<fx:Script>
+		<![CDATA[
+			import org.ten.DataShop;
+			import org.ten.PulseSpace;
+			
+			[Bindable]
+			/**
+			 * The app's data shop.
+			 */
+			private var dataShop:DataShop = DataShop.instance;
+			
+			/**
+			 * Helper function.
+			 * Ensures that the display of an element always has the passed 
+			 * number of digits (including 0).
+			 */
+			private function constrainToDigits(value:Number, digits:int):String {
+				// check if the value starts with a zero
+				var stringValue:String = value.toString();
+				if(stringValue.charAt(0) == "0") {
+					// it does, so shorten the precision
+					return value.toPrecision(digits - 1);
+				} else {
+					// it doesn't, so return the defaul precision
+					return value.toPrecision(digits);
+				}
+			}
+			
+			/**
+			 * Determine the colour of the panel based on energy usage.
+			 */
+			private function calculatePanelColour(actualEnergy:Number, typicalEnergy:Number):uint {
+				if(actualEnergy == 0) {
+					// we have an error; make it yellow
+					return 0xC9A92D;
+				} else if (actualEnergy <= typicalEnergy) {
+					// we're doing well; make it green
+					return 0x4A9848
+				} else {
+					// we're not doing well, make it red
+					return 0xC12232;
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:Rect includeInLayout="false" x="0" y="0" width="{this.width}" height="{this.height}">
+		<s:fill>
+			<s:SolidColor color="{calculatePanelColour(dataShop.mainSpace.energyPoint.actual, dataShop.mainSpace.energyPoint.typical)}" alpha="0.8" />
+		</s:fill>
+	</s:Rect>
+	
+	<s:Label text="Right Now in {dataShop.mainSpace.spaceName}" fontSize="38" />
+	
+	<s:Spacer height="100%" />
+	
+	<s:VGroup>
+		<s:Label text="Your Current Energy Demand" fontFamily="helveticaNeueLight" fontSize="26" width="200" />
+		
+		<s:HGroup verticalAlign="baseline">
+			<s:Label text="{constrainToDigits(dataShop.mainSpace.energyPoint.actual, 3)}" fontFamily="helveticaNeueUltraLight" fontSize="130" />
+			<s:Label text="kW" fontFamily="helveticaNeueThinExtended" fontSize="66" />
+		</s:HGroup>
+	</s:VGroup>
+	
+	<s:Spacer height="100%" />
+	
+	<s:VGroup>
+		<s:Label text="Your Typical Energy Demand" fontFamily="helveticaNeueLight" fontSize="26" width="200" />
+		
+		<s:HGroup verticalAlign="baseline">
+			<s:Label text="{constrainToDigits(dataShop.mainSpace.energyPoint.typical, 3)}" fontFamily="helveticaNeueUltraLight" fontSize="90" />
+			<s:Label text="kW" fontFamily="helveticaNeueThinExtended" fontSize="45" />
+		</s:HGroup>
+	</s:VGroup>
+	
+</s:VGroup>

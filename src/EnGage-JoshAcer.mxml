@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="1920" height="1080" showStatusBar="false"
+					   applicationComplete="loadConfig()" backgroundColor="0x000000"
+					   frameRate="60" xmlns:panels="org.ten.panels.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			
+			import org.ten.DataShop;
+			
+			import spark.components.Application;
+			
+			[Bindable]
+			/**
+			 * The app's data shop.
+			 */
+			private var dataShop:DataShop = DataShop.instance;
+			
+			/**
+			 * Opens the configuration file and prepares the client for operation.
+			 */
+			private function loadConfig():void {
+				// open the config file 
+				var configFile:File = new File(File.applicationDirectory.nativePath + "/engage.config");
+				trace(configFile.nativePath);
+				var configStream:FileStream = new FileStream();
+				configStream.open(configFile, FileMode.READ);
+				
+				// get the config data
+				var configDataRaw:String = configStream.readUTFBytes(configStream.bytesAvailable);
+				var configData:Array = configDataRaw.split("::");
+				
+				// set everything accordingly
+				switch(configData[0]) {
+					case "McConnell":
+						dataShop.mainSpace = dataShop.mcConnellSpace;
+						break;
+					
+					case "Gardner":
+						dataShop.mainSpace = dataShop.gardnerSpace;
+						break;
+					
+					case "Molson":
+						dataShop.mainSpace = dataShop.molsonSpace;
+						break;
+				}
+				dataShop.apiKey = configData[1];
+				dataShop.configLoaded = true;
+				
+				
+				
+				// go fullscreen
+				stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+				
+				// hide the mouse
+				Mouse.hide();
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Style source="assets/styles/ten.css" />
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout gap="0" />
+	</s:layout>
+	
+	<s:Image includeInLayout="false" x="0" y="0" width="1920" height="1080" source="assets/images/leaves.jpg" alpha="1" />
+	
+	<s:HGroup gap="0">
+		<panels:CurrentUsagePanel id="rightNowPanel" />
+		
+		<panels:WeeklyTrendPanel id="weeklyTrendPanel" />
+		
+		<panels:TimeAndWeatherPanel id="timeAndWeatherPanel" />
+	</s:HGroup>
+	
+	<s:HGroup gap="0">
+		<s:VGroup gap="0">
+			<panels:CompetitorUsagePanel id="competitor1Panel" competitorNumber="1" />
+			
+			<panels:CompetitorUsagePanel id="competitor2Panel" competitorNumber="2" />
+		</s:VGroup>
+		
+		<panels:EnergyTipsPanel id="tipsPanel" />
+		
+		<panels:MessagesPanel id="messagesPanel" />
+	</s:HGroup>
+</s:WindowedApplication>

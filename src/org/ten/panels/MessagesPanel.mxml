@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  width="480" height="540" creationComplete="finishCreation()"
+		  paddingLeft="20" paddingRight="20" paddingTop="25" paddingBottom="25">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.binding.utils.ChangeWatcher;
+			import mx.controls.Alert;
+			
+			import org.ten.DataShop;
+			import org.ten.classes.TeNfo;
+			
+			[Bindable]
+			/**
+			 * The app's data shop.
+			 */
+			private var dataShop:DataShop = DataShop.instance;
+			
+			/**
+			 * @private
+			 * A reference to the timer which handles content refreshes.
+			 */
+			private var refreshTimer:Timer;
+			
+			/**
+			 * The iterator for moving through the message array index.
+			 */
+			private var indexIterator:int = 0;
+			
+			/**
+			 * A timer for iterating through messages.
+			 */
+			private var iterationTimer:Timer;
+			
+			/**
+			 * @private
+			 * Finishes the creation of the display once the display objects
+			 * themselves have finished loading.  This will properly place elements
+			 * for TeNclient in their respective locations.
+			 */
+			private function finishCreation():void {
+				// start the scroller
+				// we'll do it here to prevent problems elsewhere
+				//tenfoScroller.start();
+				
+				// listen for the tenfos to be fetched
+				ChangeWatcher.watch(dataShop, "tenfos", populateTeNfo);
+				
+				// get all of our data
+				refreshContent();
+				
+				// add timers to refresh the content
+				refreshTimer = new Timer(600000);
+				refreshTimer.addEventListener(TimerEvent.TIMER, refreshContent);
+				refreshTimer.start();
+			}
+			
+			/**
+			 * @private
+			 * Asks the server for fresh data.
+			 */
+			private function refreshContent(event:TimerEvent = null):void {
+				
+				// get the TeNfos
+				//populateTeNfo();
+				TeNfo.getMyClientsTeNfos();
+				trace("[INFO] Refreshing TeNfos");
+			}
+			
+			/**
+			 * @private
+			 * Requests all TeNfos and displays their content in the scroller.
+			 */
+			private function populateTeNfo(object:Object = null):void {
+				if(dataShop.tenfos.length > 0) {
+					// reset the iteration timer
+					if(iterationTimer) {
+						iterationTimer.stop();
+					}
+					
+					// reset the index iterator to 0
+					indexIterator = 0;
+					
+					// set a timer to change the message
+					iterationTimer = new Timer(30000);
+					iterationTimer.addEventListener(TimerEvent.TIMER, iterateMessages);
+					iterationTimer.start();
+					
+					// call the first iteration
+					iterateMessages();
+				}
+			}
+			
+			/**
+			 * Displays the current message and then increases the iterator.
+			 */
+			private function iterateMessages(event:TimerEvent = null):void {
+				// display the current message
+				messageText.text = dataShop.tenfos[indexIterator].content;
+				
+				// increase the iterator
+				indexIterator++;
+				
+				// check to see if we should loop it
+				if(indexIterator >= dataShop.tenfos.length) {
+					indexIterator = 0;
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:Rect includeInLayout="false" x="0" y="0" width="{this.width}" height="{this.height}">
+		<s:fill>
+			<s:SolidColor color="0x000000" alpha="0.6" />
+		</s:fill>
+	</s:Rect>
+	
+	<s:Label text="Message Board" fontSize="38" />
+	
+	<s:Label id="messageText" fontSize="32" width="100%" paddingTop="30" />
+	
+	<s:Spacer height="100%" />
+	
+	<s:HGroup horizontalAlign="right" width="100%">
+		<s:Label text="EnGage" fontFamily="helveticaNeueBlack" fontSize="38" />
+		<s:Label text="by TeN" fontFamily="helveticaNeueLight" fontSize="38" />
+	</s:HGroup>
+	
+</s:VGroup>

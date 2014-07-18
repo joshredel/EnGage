@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  width="980" height="540"
+		  paddingLeft="20" paddingRight="20" paddingTop="25" paddingBottom="25"
+		  creationComplete="setupRotation()">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			/**
+			 * The different images.
+			 */
+			[Embed(source="assets/images/RecyclingTip.jpg")]
+			[Bindable]
+			private var recyclingTipImage:Class;
+			
+			[Embed(source="assets/images/ERCTip.jpg")]
+			[Bindable]
+			private var ercTipImage:Class;
+			
+			[Embed(source="assets/images/EMSTip.jpg")]
+			[Bindable]
+			private var emsTipImage:Class;
+			
+			[Bindable]
+			/**
+			 * The current tip being displayed.
+			 */
+			private var currentImage:Class = emsTipImage;
+			
+			/**
+			 * Sets up a timer to rotate the tip images.
+			 */
+			private function setupRotation():void {
+				var rotationTimer:Timer = new Timer(30000);
+				rotationTimer.addEventListener(TimerEvent.TIMER, rotateImage);
+				rotationTimer.start();
+			}
+			
+			/**
+			 * Cycles the tip image.
+			 */
+			private function rotateImage(event:TimerEvent):void {
+				if(currentImage == recyclingTipImage) {
+					currentImage = ercTipImage;
+				} else if(currentImage == ercTipImage) {
+					currentImage = emsTipImage;
+				} else {
+					currentImage = recyclingTipImage;
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:Image includeInLayout="false" x="0" y="0" width="980" height="540" source="{currentImage}" alpha="0.8" />
+	
+	<s:Label text="Keeping Green" fontSize="38" color="#454545" />
+	
+</s:VGroup>

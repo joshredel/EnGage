@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="980" height="540" paddingTop="25" paddingLeft="20" paddingBottom="10">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.charts.chartClasses.IAxis;
+			import mx.charts.chartClasses.IAxisRenderer;
+			
+			import org.ten.DataShop;
+			
+			[Bindable]
+			/**
+			 * The app's data shop.
+			 */
+			private var dataShop:DataShop = DataShop.instance;
+			
+			private function addUnits(labelValue:Object, previousValue:Object, axis:IAxis):String {
+				return labelValue + " kW";
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:SolidColorStroke id="actualStroke" color="#C12232" weight="2" />
+		<s:SolidColor id="actualColourFill" color="#C12232" alpha="0.4"/>
+		
+		<s:SolidColorStroke id="typicalStroke" color="#4A9848" weight="2" />
+		<s:SolidColor id="typicalColourFill" color="#4A9848" alpha="0.7"/>
+	</fx:Declarations>
+	
+	<s:Rect includeInLayout="false" x="0" y="0" width="{this.width}" height="{this.height}">
+		<s:fill>
+			<s:SolidColor color="0x000000" alpha="0.4" />
+		</s:fill>
+	</s:Rect>
+	
+	<s:Label text="This Week in {dataShop.mainSpace.spaceName}" fontSize="38" />
+	
+	<mx:AreaChart id="weeklyChart" width="100%" height="100%" dataProvider="{dataShop.mainSpace.weeklyEnergyData}" 
+				  fontSize="18" fontFamily="Arial" paddingBottom="10">
+		<mx:horizontalAxis>
+			<mx:DateTimeAxis id="xAxis" />
+		</mx:horizontalAxis>
+		<mx:horizontalAxisRenderers>
+			<mx:AxisRenderer axis="{xAxis}" 
+							 minorTickPlacement="none" 
+							 tickPlacement="none" 
+							 labelGap="0" 
+							 showLabels="false" 
+							 showLine="false" />
+		</mx:horizontalAxisRenderers>
+		
+		<mx:verticalAxis>
+			<mx:LinearAxis id="yAxis" labelFunction="addUnits" />
+		</mx:verticalAxis>
+		
+		<mx:series>
+			<mx:AreaSeries yField="Typical" form="curve" displayName="Typical" areaStroke="{typicalStroke}" areaFill="{typicalColourFill}" />
+			<mx:AreaSeries yField="Actual" form="curve" displayName="Actual" areaStroke="{actualStroke}" areaFill="{actualColourFill}" />
+		</mx:series>
+	</mx:AreaChart>
+	
+	<s:HGroup verticalAlign="middle">
+		<s:Rect width="15" height="20" fill="{actualColourFill}" stroke="{actualStroke}" />
+		<s:Label text="Actual Demand" fontFamily="helveticaNeueMedium" fontSize="20" paddingTop="5" />
+		
+		<s:Spacer width="20" />
+		
+		<s:Rect width="15" height="20" fill="{typicalColourFill}" stroke="{typicalStroke}" />
+		<s:Label text="Typical Demand" fontFamily="helveticaNeueMedium" fontSize="20" paddingTop="5" />
+		
+		<s:Spacer width="20" />
+		
+		<s:Label text="Aim to have your actual equal or less than your typical!" fontSize="20" paddingTop="5" />
+	</s:HGroup>
+</s:VGroup>

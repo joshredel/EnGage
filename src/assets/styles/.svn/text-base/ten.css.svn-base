@@ -1,0 +1,52 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+@font-face {
+	src: url("assets/fonts/SegoeWP.ttf");
+	fontFamily: segoeRegular;
+}
+
+@font-face {
+	src: url("assets/fonts/SegoeWP-SemiBold.ttf");
+	fontFamily: segoeSemiBold;
+}
+
+@font-face {
+	src: url("assets/fonts/SegoeWP-Light.ttf");
+	fontFamily: segoeLight;
+}
+
+s|WindowedApplication {
+	color: #FFFFFF;
+}
+
+.weatherTitle {
+	fontFamily: segoeSemiBold;
+	fontSize: 21;
+}
+
+.weatherLabel {
+	fontFamily: segoeRegular;
+	fontSize: 30;
+}
+
+.energyLabel {
+	textAlign: right;
+	width: 75px;
+	fontFamily: segoeLight;
+}
+
+.qrDescription {
+	fontSize: 14;
+}
+
+.qrInfo {
+	fontSize: 24;
+	fontFamily: segoeLight;
+}
+
+.tickerElement {
+	fontSize: 26;
+	fontFamily: segoeLight;
+}
